@@ -606,12 +606,12 @@ def main():
                     DONATE TO WFP →
                 </button>
             </a>
-            <a href="https://www.unicef.org/" target="_blank">
+            <a href="https://www.unicef.org/somalia/take-action" target="_blank">
                 <button style="background: #2e86c1; color: white; border: none; padding: 1rem 2.5rem; border-radius: 50px; font-size: 1.2rem; font-weight: 600; cursor: pointer; box-shadow: 0 8px 20px rgba(46,134,193,0.3);">
                     SUPPORT UNICEF →
                 </button>
             </a>
-            <a href="https://www.savethechildren.org/" target="_blank">
+            <a href="https://www.savethechildren.org/us/where-we-work/somalia" target="_blank">
                 <button style="background: #e68a2e; color: white; border: none; padding: 1rem 2.5rem; border-radius: 50px; font-size: 1.2rem; font-weight: 600; cursor: pointer; box-shadow: 0 8px 20px rgba(230,138,46,0.3);">
                     HELP SAVE THE CHILDREN →
                 </button>
