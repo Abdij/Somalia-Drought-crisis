@@ -1,13 +1,11 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
-from typing import Any, Dict, List, Tuple
+from pathlib import Path
 
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-import requests
 import streamlit as st
 
 
@@ -20,6 +18,51 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
+# =========================================================
+# VISITOR COUNTER
+# =========================================================
+COUNTER_FILE = Path("visitor_counter.json")
+
+
+def load_visitor_count() -> int:
+    """Load total visitor count from local JSON file."""
+    if COUNTER_FILE.exists():
+        try:
+            with open(COUNTER_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            return int(data.get("total_visitors", 0))
+        except (json.JSONDecodeError, OSError, ValueError):
+            return 0
+    return 0
+
+
+def save_visitor_count(count: int) -> None:
+    """Save total visitor count to local JSON file."""
+    with open(COUNTER_FILE, "w", encoding="utf-8") as f:
+        json.dump({"total_visitors": count}, f)
+
+
+def get_ordinal(n: int) -> str:
+    """Convert integer to ordinal string."""
+    if 10 <= n % 100 <= 20:
+        suffix = "th"
+    else:
+        suffix = {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+    return f"{n}{suffix}"
+
+
+def register_visitor_once_per_session() -> int:
+    """
+    Register one visit per Streamlit session.
+    Prevents reruns from incrementing the counter repeatedly.
+    """
+    if "visitor_number" not in st.session_state:
+        total = load_visitor_count() + 1
+        save_visitor_count(total)
+        st.session_state["visitor_number"] = total
+    return st.session_state["visitor_number"]
+
 
 # =========================================================
 # CUSTOM CSS
@@ -35,7 +78,7 @@ st.markdown("""
         padding: 2rem 2rem;
         border-radius: 20px;
         color: white;
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
         box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
     .main-header h1 {
@@ -48,6 +91,14 @@ st.markdown("""
         font-size: 1.2rem;
         opacity: 0.95;
         margin-top: 0.5rem;
+    }
+    .visitor-card {
+        background: #ffffff;
+        border-left: 8px solid #2e86c1;
+        border-radius: 16px;
+        padding: 1.3rem 1.5rem;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        margin-bottom: 1.5rem;
     }
     .metric-card-critical {
         background: #ffffff;
@@ -131,7 +182,6 @@ st.markdown("""
 # =========================================================
 # DATA SOURCES & CONFIG
 # =========================================================
-# These are based on the search results from March 2026
 DROUGHT_DATA = {
     "hunger": {
         "total_affected": 6500000,
@@ -192,7 +242,6 @@ DROUGHT_DATA = {
     ]
 }
 
-# Testimonials from Somalis affected by drought
 TESTIMONIALS = [
     {
         "quote": "Our farms were destroyed, our livestock died, and water sources became too far away. We have nothing left to bring with us. We walked for days to reach this camp.",
@@ -214,7 +263,6 @@ TESTIMONIALS = [
     }
 ]
 
-# Somalia coordinates for mapping
 SOMALIA_CENTER = {"lat": 5.1521, "lon": 46.1996}
 REGION_COORDS = {
     "Bay": {"lat": 2.85, "lon": 43.85},
@@ -250,19 +298,17 @@ def format_number(num: int) -> str:
 def create_severity_map():
     """Create a choropleth map of drought severity by region"""
     df = pd.DataFrame(DROUGHT_DATA["regions"])
-    
-    # Add coordinates
+
     df["lat"] = df["region"].map(lambda x: REGION_COORDS.get(x, {"lat": None})["lat"])
     df["lon"] = df["region"].map(lambda x: REGION_COORDS.get(x, {"lon": None})["lon"])
-    
-    # Severity color mapping
+
     severity_colors = {
         "Emergency": "#b33a3a",
         "Crisis": "#e68a2e",
         "Stress": "#f1c40f",
     }
     df["color"] = df["severity"].map(severity_colors)
-    
+
     fig = px.scatter_mapbox(
         df,
         lat="lat",
@@ -284,7 +330,7 @@ def create_severity_map():
         size_max=50,
         opacity=0.8,
     )
-    
+
     fig.update_layout(
         mapbox_style="carto-positron",
         margin=dict(l=0, r=0, t=40, b=0),
@@ -302,14 +348,14 @@ def create_severity_map():
             borderwidth=1,
         ),
     )
-    
+
     return fig
 
 
 def create_trend_chart():
     """Create line chart showing hunger trend"""
     df = pd.DataFrame(DROUGHT_DATA["hunger"]["trend"])
-    
+
     fig = px.line(
         df,
         x="month",
@@ -318,12 +364,12 @@ def create_trend_chart():
         title="Rising Hunger: People Facing Crisis or Worse (IPC Phase 3+)",
         labels={"value": "People Affected", "month": ""},
     )
-    
+
     fig.update_traces(
         line=dict(color="#b33a3a", width=4),
         marker=dict(size=10, color="#b33a3a"),
     )
-    
+
     fig.update_layout(
         yaxis_tickformat=",.0f",
         yaxis_title="Number of People",
@@ -331,21 +377,22 @@ def create_trend_chart():
         hovermode="x",
         margin=dict(l=60, r=20, t=60, b=40),
     )
-    
+
     fig.update_yaxes(tickprefix=" ")
-    
+
     return fig
 
 
 def create_funding_chart():
     """Create funding gap visualization"""
     fig = go.Figure()
-    
-    # Funding received vs needed
-    received = DROUGHT_DATA["funding"]["un_response_plan"] * (DROUGHT_DATA["funding"]["funding_received_pct"] / 100)
+
+    received = DROUGHT_DATA["funding"]["un_response_plan"] * (
+        DROUGHT_DATA["funding"]["funding_received_pct"] / 100
+    )
     needed = DROUGHT_DATA["funding"]["un_response_plan"]
     gap = needed - received
-    
+
     fig.add_trace(go.Bar(
         x=["Funds Needed", "Funds Received", "Funding Gap"],
         y=[needed, received, gap],
@@ -354,7 +401,7 @@ def create_funding_chart():
         textposition="outside",
         textfont=dict(size=14),
     ))
-    
+
     fig.update_layout(
         title="2026 Humanitarian Response Plan: Critical Funding Gap",
         yaxis_title="USD (Millions)",
@@ -363,20 +410,20 @@ def create_funding_chart():
         margin=dict(l=60, r=20, t=60, b=40),
         yaxis=dict(tickformat="$,.0f"),
     )
-    
+
     return fig
 
 
 def create_wfp_timeline():
     """Show WFP assistance cuts over time"""
     fig = go.Figure()
-    
+
     categories = ["Early 2025", "Current (March 2026)"]
     values = [
         DROUGHT_DATA["funding"]["wfp_recipients_2025"],
         DROUGHT_DATA["funding"]["wfp_recipients_current"],
     ]
-    
+
     fig.add_trace(go.Bar(
         x=categories,
         y=values,
@@ -385,7 +432,7 @@ def create_wfp_timeline():
         textposition="outside",
         textfont=dict(size=14),
     ))
-    
+
     fig.update_layout(
         title="WFP Food Assistance: Drastic Cuts Due to Funding Shortfalls",
         yaxis_title="People Receiving Assistance",
@@ -394,7 +441,7 @@ def create_wfp_timeline():
         margin=dict(l=60, r=20, t=60, b=40),
         yaxis=dict(tickformat=",.0f"),
     )
-    
+
     return fig
 
 
@@ -402,7 +449,8 @@ def create_wfp_timeline():
 # MAIN APP
 # =========================================================
 def main():
-    # Header
+    visitor_number = register_visitor_once_per_session()
+
     st.markdown("""
     <div class="main-header">
         <h1>💧 ABAARTII OOMAAAN</h1>
@@ -410,12 +458,19 @@ def main():
         <p>When a drought is given a name, it signals historic severity. "Abaartii Oomaan" or "Biyo La'aan ba'an" — the severe waterless drought.</p>
     </div>
     """, unsafe_allow_html=True)
-    
-    # Key Metrics Row
+
+    st.markdown(f"""
+    <div class="visitor-card">
+        <div class="metric-label">Visitor Counter</div>
+        <div class="metric-value">You are the {get_ordinal(visitor_number)} visitor</div>
+        <div class="metric-context">Thank you for opening the dashboard and helping raise awareness.</div>
+    </div>
+    """, unsafe_allow_html=True)
+
     st.markdown("## Crisis at a Glance")
-    
+
     col1, col2, col3, col4 = st.columns(4)
-    
+
     with col1:
         st.markdown(f"""
         <div class="metric-card-critical">
@@ -424,7 +479,7 @@ def main():
             <div class="metric-context">IPC Phase 3+ (Crisis or worse)<br>↑ Double from 2025</div>
         </div>
         """, unsafe_allow_html=True)
-    
+
     with col2:
         st.markdown(f"""
         <div class="metric-card-critical">
@@ -433,7 +488,7 @@ def main():
             <div class="metric-context">{format_number(DROUGHT_DATA['malnutrition']['severe_malnutrition'])} severely malnourished</div>
         </div>
         """, unsafe_allow_html=True)
-    
+
     with col3:
         st.markdown(f"""
         <div class="metric-card-warning">
@@ -442,7 +497,7 @@ def main():
             <div class="metric-context">July-Dec 2025 only<br>↑ 1,500 new displacements daily</div>
         </div>
         """, unsafe_allow_html=True)
-    
+
     with col4:
         st.markdown(f"""
         <div class="metric-card-info">
@@ -451,41 +506,37 @@ def main():
             <div class="metric-context">Only {DROUGHT_DATA['funding']['funding_received_pct']}% funded<br>WFP needs ${DROUGHT_DATA['funding']['wfp_funding_needed']/1e6:.0f}M urgently</div>
         </div>
         """, unsafe_allow_html=True)
-    
-    # Urgent Callout
+
     st.markdown("""
     <div class="callout-box">
         <strong>🚨 URGENT: The window to prevent famine is closing.</strong><br>
-        Without immediate funding, humanitarian operations will grind to a halt. 
+        Without immediate funding, humanitarian operations will grind to a halt.
         WFP has already been forced to cut food assistance from <strong>2.2 million to just 600,000 people</strong>.
     </div>
     """, unsafe_allow_html=True)
-    
-    # Two-column layout for maps and charts
+
     col_left, col_right = st.columns([3, 2])
-    
+
     with col_left:
         st.plotly_chart(create_severity_map(), use_container_width=True)
-    
+
     with col_right:
         st.plotly_chart(create_trend_chart(), use_container_width=True)
-    
-    # Funding and WFP charts
+
     col_a, col_b = st.columns(2)
-    
+
     with col_a:
         st.plotly_chart(create_funding_chart(), use_container_width=True)
-    
+
     with col_b:
         st.plotly_chart(create_wfp_timeline(), use_container_width=True)
-    
-    # Regional Breakdown
+
     st.markdown("## Regional Impact")
-    
+
     region_df = pd.DataFrame(DROUGHT_DATA["regions"])
     region_df["population_affected"] = region_df["population_affected"].apply(lambda x: f"{x/1000:.0f}K")
     region_df["affected_pct"] = region_df["affected_pct"].apply(lambda x: f"{x}%")
-    
+
     st.dataframe(
         region_df.rename(columns={
             "region": "Region",
@@ -496,10 +547,9 @@ def main():
         use_container_width=True,
         hide_index=True,
     )
-    
-    # Voices from Somalia
+
     st.markdown("## 🗣️ Voices from the Drought")
-    
+
     cols = st.columns(3)
     for i, testimonial in enumerate(TESTIMONIALS):
         with cols[i]:
@@ -511,12 +561,11 @@ def main():
                 <div style="font-size:0.8rem; color:#9f9f9f; margin-top:0.5rem;">{testimonial['source']}</div>
             </div>
             """, unsafe_allow_html=True)
-    
-    # Water Access & Livelihoods
+
     st.markdown("## 💧 Water Access & Livelihoods")
-    
+
     col_w1, col_w2, col_w3 = st.columns(3)
-    
+
     with col_w1:
         st.markdown(f"""
         <div class="metric-card-warning">
@@ -525,7 +574,7 @@ def main():
             <div class="metric-context">Families walk up to 30km (18.6 miles) for water</div>
         </div>
         """, unsafe_allow_html=True)
-    
+
     with col_w2:
         st.markdown(f"""
         <div class="metric-card-critical">
@@ -534,7 +583,7 @@ def main():
             <div class="metric-context">of herds have died - the backbone of rural livelihoods</div>
         </div>
         """, unsafe_allow_html=True)
-    
+
     with col_w3:
         st.markdown(f"""
         <div class="metric-card-critical">
@@ -543,8 +592,7 @@ def main():
             <div class="metric-context">of agricultural land affected</div>
         </div>
         """, unsafe_allow_html=True)
-    
-    # Call to Action
+
     st.markdown("---")
     st.markdown("""
     <div style="text-align: center; padding: 2rem; background: linear-gradient(135deg, #fef9e7 0%, #fdf3e0 100%); border-radius: 20px; margin: 2rem 0;">
@@ -574,12 +622,11 @@ def main():
         </p>
     </div>
     """, unsafe_allow_html=True)
-    
-    # Data Sources
+
     with st.expander(" Data Sources & Methodology"):
         st.markdown("""
         **All data is sourced from official humanitarian organizations (March 2026):**
-        
+
         - **IPC FSNWG (Food Security and Nutrition Working Group):** Hunger estimates and projections
         - **UN OCHA:** Humanitarian Response Plan and funding tracking
         - **WFP (World Food Programme):** Food assistance data and funding requirements
@@ -587,16 +634,15 @@ def main():
         - **FAO / SWALIM:** Water access, livestock, and crop data
         - **UNHCR / PRMN:** Displacement tracking
         - **Somalia Disaster Management Agency (SoDMA):** Regional impact assessments
-        
+
         *Last updated: March 11, 2026*
-        
+
         **Methodology Note:** Regional severity levels are based on IPC classifications:
         - **Emergency (IPC Phase 4):** Extreme food gaps, excess mortality
         - **Crisis (IPC Phase 3):** Significant food gaps, acute malnutrition
         - **Stress (IPC Phase 2):** Minimal adequate food consumption
         """)
-    
-    # Footer
+
     st.markdown("---")
     st.markdown("""
     <div style="text-align: center; color: #8f8f8f; font-size: 0.9rem; padding: 1rem;">
