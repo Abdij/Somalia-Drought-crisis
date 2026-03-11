@@ -601,7 +601,7 @@ def main():
             The people of Somalia cannot wait. Every day of inaction costs lives.
         </p>
         <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
-            <a href="https://www.wfp.org/" target="_blank">
+            <a href="https://sharethemeal.org/en-us/campaigns/somalia1" target="_blank">
                 <button style="background: #b33a3a; color: white; border: none; padding: 1rem 2.5rem; border-radius: 50px; font-size: 1.2rem; font-weight: 600; cursor: pointer; box-shadow: 0 8px 20px rgba(179,58,58,0.3);">
                     DONATE TO WFP →
                 </button>
