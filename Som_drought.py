@@ -15,7 +15,7 @@ import streamlit as st
 # PAGE CONFIG
 # =========================================================
 st.set_page_config(
-    page_title="Somalia Drought Crisis 2026",
+    page_title="Somalia Drought Crisis",
     page_icon="💧",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -406,7 +406,7 @@ def main():
     st.markdown("""
     <div class="main-header">
         <h1>💧 ABAARTII OOMAAAN</h1>
-        <h1>Somalia Drought Crisis • March 2026</h1>
+        <h1>Somalia Drought Crisis</h1>
         <p>When a drought is given a name, it signals historic severity. "Abaartii Oomaan" or "Biyo La'aan ba'an" — the severe waterless drought.</p>
     </div>
     """, unsafe_allow_html=True)
