@@ -453,7 +453,7 @@ def main():
 
     st.markdown("""
     <div class="main-header">
-        <h1>💧 ABAARTII OOMAAAN</h1>
+        <h1>💧 ABAARTII OOMAAN</h1>
         <h1>Somalia Drought Crisis</h1>
         <p>When a drought is given a name, it signals historic severity. "Abaartii Oomaan" or "Biyo La'aan ba'an" — the severe waterless drought.</p>
     </div>
