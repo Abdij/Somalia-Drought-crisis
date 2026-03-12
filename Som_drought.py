@@ -8,6 +8,21 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
+# =========================================================
+# GOOGLE ANALYTICS TAG
+# =========================================================
+GA_TAG = """
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-40KHVRCN8W"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-DBD1F00KKB');
+</script>
+"""
+
+st.markdown(GA_TAG, unsafe_allow_html=True)
 
 # =========================================================
 # PAGE CONFIG
