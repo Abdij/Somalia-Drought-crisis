@@ -13,11 +13,12 @@ import streamlit as st
 # =========================================================
 GA_TAG = """
 <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-40KHVRCN8W"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DBD1F00KKB"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
+
   gtag('config', 'G-DBD1F00KKB');
 </script>
 """
