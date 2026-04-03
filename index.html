@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Somalia Drought Crisis</title>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DBD1F00KKB"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-DBD1F00KKB');
+  </script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <style>
+    :root {
+      --bg-1: #fef9e7;
+      --bg-2: #fdf3e0;
+      --critical: #b33a3a;
+      --warning: #e68a2e;
+      --info: #2e86c1;
+      --success: #28b463;
+      --text: #2d2d2d;
+      --muted: #6b7280;
+      --card: #ffffff;
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      --radius: 18px;
+      --max-width: 1380px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: Inter, Arial, sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 100%);
+    }
+
+    .page {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .main-header {
+      background: linear-gradient(135deg, #b33a3a 0%, #8b2c2c 100%);
+      padding: 2rem;
+      border-radius: 20px;
+      color: white;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    .main-header h1 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      margin: 0;
+      color: white;
+      line-height: 1.1;
+    }
+    .main-header p {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      margin-top: 0.75rem;
+      max-width: 900px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 1.3rem 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .visitor-card { border-left: 8px solid var(--info); }
+    .metric-card-critical { border-left: 8px solid var(--critical); }
+    .metric-card-warning { border-left: 8px solid var(--warning); }
+    .metric-card-info { border-left: 8px solid var(--info); }
+
+    .metric-label {
+      font-size: 1rem;
+      color: #5f5f5f;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+    }
+    .metric-value {
+      font-size: clamp(2rem, 3vw, 3rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-top: 0.35rem;
+    }
+    .metric-context {
+      font-size: 0.95rem;
+      color: #7f7f7f;
+      margin-top: 0.6rem;
+      padding-top: 0.6rem;
+      border-top: 1px dashed #e0e0e0;
+      line-height: 1.45;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .grid-2-3 {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(320px, 2fr);
+      gap: 16px;
+      align-items: start;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .section-title {
+      margin: 1.5rem 0 1rem 0;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #3a2a2a;
+    }
+
+    .callout-box {
+      background: #fff3cd;
+      border-left: 6px solid #ffc107;
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin: 1.5rem 0;
+      font-size: 1.06rem;
+      line-height: 1.55;
+    }
+
+    .chart-card {
+      background: white;
+      border-radius: 16px;
+      padding: 10px;
+      box-shadow: var(--shadow);
+      min-height: 420px;
+    }
+    .chart {
+      width: 100%;
+      height: 400px;
+    }
+
+    .table-card {
+      background: white;
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.96rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid #ececec;
+    }
+    th {
+      background: #faf8f2;
+      color: #5b4b4b;
+      font-size: 0.88rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .testimonial-box {
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      margin: 0;
+      font-style: italic;
+      border: 1px solid #f0f0f0;
+      min-height: 100%;
+    }
+    .testimonial-author {
+      font-weight: 700;
+      margin-top: 1rem;
+      color: var(--critical);
+      font-style: normal;
+    }
+    .testimonial-location {
+      font-size: 0.9rem;
+      color: #7f7f7f;
+      margin-top: 0.25rem;
+      font-style: normal;
+    }
+    .testimonial-source {
+      font-size: 0.8rem;
+      color: #9f9f9f;
+      margin-top: 0.5rem;
+      font-style: normal;
+    }
+
+    .cta-box {
+      text-align: center;
+      padding: 2rem;
+      background: linear-gradient(135deg, #fef9e7 0%, #fdf3e0 100%);
+      border-radius: 20px;
+      margin: 2rem 0;
+      box-shadow: var(--shadow);
+    }
+    .cta-box h2 {
+      color: var(--critical);
+      font-size: 2.1rem;
+      margin: 0 0 1rem 0;
+    }
+    .cta-box p {
+      font-size: 1.15rem;
+      max-width: 800px;
+      margin: 0 auto 1.5rem auto;
+      line-height: 1.5;
+    }
+    .cta-actions {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .cta-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: white;
+      border: none;
+      padding: 1rem 1.8rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      font-weight: 700;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.16);
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+    .cta-button:hover { transform: translateY(-1px); filter: brightness(1.03); }
+    .cta-red { background: var(--critical); }
+    .cta-blue { background: var(--info); }
+    .cta-orange { background: var(--warning); }
+
+    details {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    summary {
+      cursor: pointer;
+      padding: 1rem 1.2rem;
+      font-weight: 700;
+      list-style: none;
+    }
+    details > div {
+      padding: 0 1.2rem 1.2rem 1.2rem;
+      line-height: 1.65;
+      color: #4b5563;
+    }
+    .footer-note {
+      text-align: center;
+      color: #8f8f8f;
+      font-size: 0.9rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 1100px) {
+      .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid-2-3, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .page { padding: 12px; }
+      .grid-4 { grid-template-columns: 1fr; }
+      .cta-actions { flex-direction: column; }
+      .cta-button { width: 100%; }
+      .chart { height: 360px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="main-header">
+      <h1>💧 ABAARTII OOMAAN</h1>
+      <h1>Somalia Drought Crisis</h1>
+      <p>When a drought is given a name, it signals historic severity. “Abaartii Oomaan” or “Biyo La'aan ba'an” — the severe waterless drought.</p>
+    </header>
+
+    <section id="visitorCard" class="card visitor-card"></section>
+
+    <h2 class="section-title">Crisis at a Glance</h2>
+    <section id="metricsGrid" class="grid-4"></section>
+
+    <div class="callout-box">
+      <strong>🚨 URGENT: The window to prevent famine is closing.</strong><br>
+      Without immediate funding, humanitarian operations will grind to a halt. WFP has already been forced to cut food assistance from <strong>2.2 million to just 600,000 people</strong>.
+    </div>
+
+    <section class="grid-2-3">
+      <div class="chart-card"><div id="severityMap" class="chart"></div></div>
+      <div class="chart-card"><div id="trendChart" class="chart"></div></div>
+    </section>
+
+    <section class="grid-2" style="margin-top: 16px;">
+      <div class="chart-card"><div id="fundingChart" class="chart"></div></div>
+      <div class="chart-card"><div id="wfpChart" class="chart"></div></div>
+    </section>
+
+    <h2 class="section-title">Regional Impact</h2>
+    <section class="table-card">
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Region</th>
+              <th>Population Affected %</th>
+              <th>People Affected</th>
+              <th>IPC Severity Level</th>
+            </tr>
+          </thead>
+          <tbody id="regionTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <h2 class="section-title">🗣️ Voices from the Drought</h2>
+    <section id="testimonials" class="grid-3"></section>
+
+    <h2 class="section-title">💧 Water Access & Livelihoods</h2>
+    <section id="waterMetrics" class="grid-3"></section>
+
+    <section class="cta-box">
+      <h2>🇸🇴 ACT NOW</h2>
+      <p>The people of Somalia cannot wait. Every day of inaction costs lives.</p>
+      <div class="cta-actions">
+        <a class="cta-button cta-red" href="https://sharethemeal.org/en-us/campaigns/somalia1" target="_blank" rel="noopener noreferrer">DONATE TO WFP →</a>
+        <a class="cta-button cta-blue" href="https://www.unicef.org/somalia/take-action" target="_blank" rel="noopener noreferrer">SUPPORT UNICEF →</a>
+        <a class="cta-button cta-orange" href="https://www.savethechildren.org/us/where-we-work/somalia" target="_blank" rel="noopener noreferrer">HELP SAVE THE CHILDREN →</a>
+      </div>
+      <p style="margin-top: 1.5rem; color: #5f5f5f; font-size: 0.98rem;">Share this dashboard to raise awareness: <strong>#SomaliaDrought2026 #ActNow</strong></p>
+    </section>
+
+    <details>
+      <summary>Data Sources &amp; Methodology</summary>
+      <div>
+        <p><strong>All data is sourced from official humanitarian organizations (March 2026):</strong></p>
+        <ul>
+          <li><strong>IPC FSNWG (Food Security and Nutrition Working Group):</strong> Hunger estimates and projections</li>
+          <li><strong>UN OCHA:</strong> Humanitarian Response Plan and funding tracking</li>
+          <li><strong>WFP (World Food Programme):</strong> Food assistance data and funding requirements</li>
+          <li><strong>UNICEF:</strong> Child malnutrition statistics</li>
+          <li><strong>FAO / SWALIM:</strong> Water access, livestock, and crop data</li>
+          <li><strong>UNHCR / PRMN:</strong> Displacement tracking</li>
+          <li><strong>Somalia Disaster Management Agency (SoDMA):</strong> Regional impact assessments</li>
+        </ul>
+        <p><em>Last updated: March 11, 2026</em></p>
+        <p><strong>Methodology Note:</strong> Regional severity levels are based on IPC classifications:</p>
+        <ul>
+          <li><strong>Emergency (IPC Phase 4):</strong> Extreme food gaps, excess mortality</li>
+          <li><strong>Crisis (IPC Phase 3):</strong> Significant food gaps, acute malnutrition</li>
+          <li><strong>Stress (IPC Phase 2):</strong> Minimal adequate food consumption</li>
+        </ul>
+      </div>
+    </details>
+
+    <div class="footer-note">Built with 💔 for the people of Somalia • Data visualizations for advocacy • Use freely to raise awareness</div>
+  </div>
+
+  <script>
+    const DROUGHT_DATA = {
+      hunger: {
+        total_affected: 6500000,
+        crisis_level: 4500000,
+        emergency_level: 1800000,
+        catastrophe_level: 200000,
+        source: 'UN OCHA / IPC FSNWG',
+        date: 'February 2026',
+        trend: [
+          { month: 'Oct 2025', value: 4200000 },
+          { month: 'Dec 2025', value: 5300000 },
+          { month: 'Feb 2026', value: 6500000 }
+        ]
+      },
+      malnutrition: {
+        total_children_affected: 1800000,
+        severe_malnutrition: 480000,
+        moderate_malnutrition: 1320000,
+        source: 'UNICEF / WFP',
+        date: 'January 2026'
+      },
+      funding: {
+        wfp_recipients_2025: 2200000,
+        wfp_recipients_current: 600000,
+        wfp_funding_needed: 95000000,
+        un_response_plan: 852000000,
+        funding_received_pct: 16,
+        source: 'WFP / UN OCHA',
+        date: 'March 2026'
+      },
+      displacement: {
+        total_displaced: 278000,
+        period: 'July-Dec 2025',
+        source: 'UNHCR / PRMN',
+        daily_new: 1500
+      },
+      water: {
+        distance_km: 30,
+        percent_livestock_loss: 60,
+        crop_failure_pct: 70,
+        source: 'FAO / SWALIM'
+      },
+      regions: [
+        { region: 'Bay', affected_pct: 85, population_affected: 850000, severity: 'Emergency' },
+        { region: 'Bakool', affected_pct: 82, population_affected: 420000, severity: 'Emergency' },
+        { region: 'Gedo', affected_pct: 78, population_affected: 520000, severity: 'Crisis' },
+        { region: 'Lower Shabelle', affected_pct: 80, population_affected: 950000, severity: 'Emergency' },
+        { region: 'Middle Shabelle', affected_pct: 70, population_affected: 480000, severity: 'Crisis' },
+        { region: 'Hiran', affected_pct: 75, population_affected: 350000, severity: 'Crisis' },
+        { region: 'Mudug', affected_pct: 65, population_affected: 280000, severity: 'Crisis' },
+        { region: 'Nugaal', affected_pct: 60, population_affected: 220000, severity: 'Stress' },
+        { region: 'Bari', affected_pct: 55, population_affected: 380000, severity: 'Stress' },
+        { region: 'Sool', affected_pct: 62, population_affected: 190000, severity: 'Crisis' },
+        { region: 'Sanaag', affected_pct: 58, population_affected: 210000, severity: 'Stress' },
+        { region: 'Togdheer', affected_pct: 68, population_affected: 320000, severity: 'Crisis' },
+        { region: 'Woqooyi Galbeed', affected_pct: 52, population_affected: 450000, severity: 'Stress' },
+        { region: 'Awdal', affected_pct: 48, population_affected: 280000, severity: 'Stress' }
+      ]
+    };
+
+    const TESTIMONIALS = [
+      {
+        quote: 'Our farms were destroyed, our livestock died, and water sources became too far away. We have nothing left to bring with us. We walked for days to reach this camp.',
+        author: 'Abdiyo Ali',
+        location: 'Mother displaced from Lower Shabelle',
+        source: 'UNHCR Interview, January 2026'
+      },
+      {
+        quote: 'Before the drought became severe, our animals were healthy and strong. Now they are weak and dying. We\'ve lost 40 of our 50 goats. I don\'t know how we will survive.',
+        author: 'Xaawo Maxamed Jama',
+        location: 'Central Somalia',
+        source: 'FAO Assessment, February 2026'
+      },
+      {
+        quote: 'My children haven\'t eaten properly in days. There is no work, no food, no hope. We need help before it\'s too late.',
+        author: 'Ahmed Nur',
+        location: 'IDP Camp, Baidoa',
+        source: 'Save the Children, March 2026'
+      }
+    ];
+
+    const SOMALIA_CENTER = { lat: 5.1521, lon: 46.1996 };
+    const REGION_COORDS = {
+      'Bay': { lat: 2.85, lon: 43.85 },
+      'Bakool': { lat: 4.0, lon: 43.5 },
+      'Gedo': { lat: 3.0, lon: 42.5 },
+      'Lower Shabelle': { lat: 2.5, lon: 44.5 },
+      'Middle Shabelle': { lat: 3.5, lon: 45.5 },
+      'Hiran': { lat: 4.5, lon: 45.5 },
+      'Mudug': { lat: 6.5, lon: 48.5 },
+      'Nugaal': { lat: 8.0, lon: 49.5 },
+      'Bari': { lat: 10.5, lon: 50.5 },
+      'Sool': { lat: 8.5, lon: 47.5 },
+      'Sanaag': { lat: 10.0, lon: 47.5 },
+      'Togdheer': { lat: 9.0, lon: 45.5 },
+      'Woqooyi Galbeed': { lat: 9.5, lon: 44.5 },
+      'Awdal': { lat: 10.5, lon: 43.5 }
+    };
+
+    function formatNumber(num) {
+      if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+      if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+      return num.toLocaleString();
+    }
+
+    function getOrdinal(n) {
+      if (n % 100 >= 10 && n % 100 <= 20) return `${n}th`;
+      const suffix = {1: 'st', 2: 'nd', 3: 'rd'}[n % 10] || 'th';
+      return `${n}${suffix}`;
+    }
+
+    function registerVisitorOncePerBrowser() {
+      const countKey = 'somalia_drought_total_visits';
+      const sessionKey = 'somalia_drought_registered';
+      let total = parseInt(localStorage.getItem(countKey) || '0', 10);
+      if (!sessionStorage.getItem(sessionKey)) {
+        total += 1;
+        localStorage.setItem(countKey, String(total));
+        sessionStorage.setItem(sessionKey, '1');
+      }
+      return total;
+    }
+
+    function buildVisitorCard() {
+      const visitorNumber = registerVisitorOncePerBrowser();
+      document.getElementById('visitorCard').innerHTML = `
+        <div class="metric-label">Visitor Counter</div>
+        <div class="metric-value">You are the ${getOrdinal(visitorNumber)} visitor</div>
+        <div class="metric-context">This counter is browser-based in the static version and is not a shared global counter.</div>
+      `;
+    }
+
+    function buildTopMetrics() {
+      const metrics = [
+        {
+          className: 'metric-card-critical',
+          label: 'People Facing Hunger',
+          value: formatNumber(DROUGHT_DATA.hunger.total_affected),
+          context: 'IPC Phase 3+ (Crisis or worse)<br>↑ Double from 2025'
+        },
+        {
+          className: 'metric-card-critical',
+          label: 'Children Malnourished',
+          value: formatNumber(DROUGHT_DATA.malnutrition.total_children_affected),
+          context: `${formatNumber(DROUGHT_DATA.malnutrition.severe_malnutrition)} severely malnourished`
+        },
+        {
+          className: 'metric-card-warning',
+          label: 'Displaced People',
+          value: formatNumber(DROUGHT_DATA.displacement.total_displaced),
+          context: 'July-Dec 2025 only<br>↑ 1,500 new displacements daily'
+        },
+        {
+          className: 'metric-card-info',
+          label: 'Funding Gap',
+          value: `$${(DROUGHT_DATA.funding.un_response_plan / 1e6).toFixed(0)}M`,
+          context: `Only ${DROUGHT_DATA.funding.funding_received_pct}% funded<br>WFP needs $${(DROUGHT_DATA.funding.wfp_funding_needed / 1e6).toFixed(0)}M urgently`
+        }
+      ];
+
+      document.getElementById('metricsGrid').innerHTML = metrics.map(metric => `
+        <div class="card ${metric.className}">
+          <div class="metric-label">${metric.label}</div>
+          <div class="metric-value">${metric.value}</div>
+          <div class="metric-context">${metric.context}</div>
+        </div>
+      `).join('');
+    }
+
+    function createSeverityMap() {
+      const rows = DROUGHT_DATA.regions.map(region => ({
+        ...region,
+        lat: REGION_COORDS[region.region]?.lat,
+        lon: REGION_COORDS[region.region]?.lon
+      }));
+
+      const severityColors = {
+        Emergency: '#b33a3a',
+        Crisis: '#e68a2e',
+        Stress: '#f1c40f'
+      };
+
+      const trace = {
+        type: 'scattermapbox',
+        mode: 'markers',
+        lat: rows.map(d => d.lat),
+        lon: rows.map(d => d.lon),
+        text: rows.map(d => `${d.region}<br>${d.severity}<br>${d.affected_pct}% affected<br>${d.population_affected.toLocaleString()} people`),
+        hoverinfo: 'text',
+        marker: {
+          size: rows.map(d => Math.max(18, Math.sqrt(d.population_affected) / 20)),
+          color: rows.map(d => severityColors[d.severity]),
+          opacity: 0.82,
+          sizemode: 'diameter'
+        }
+      };
+
+      const layout = {
+        title: { text: 'Drought Severity by Region', x: 0.02 },
+        margin: { l: 0, r: 0, t: 44, b: 0 },
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        mapbox: {
+          style: 'carto-positron',
+          center: SOMALIA_CENTER,
+          zoom: 4.5
+        },
+        showlegend: false,
+        annotations: [
+          { x: 0.01, y: 1.02, xref: 'paper', yref: 'paper', text: '● Emergency', showarrow: false, font: { color: '#b33a3a', size: 12 } },
+          { x: 0.22, y: 1.02, xref: 'paper', yref: 'paper', text: '● Crisis', showarrow: false, font: { color: '#e68a2e', size: 12 } },
+          { x: 0.35, y: 1.02, xref: 'paper', yref: 'paper', text: '● Stress', showarrow: false, font: { color: '#b58900', size: 12 } }
+        ]
+      };
+
+      Plotly.newPlot('severityMap', [trace], layout, { responsive: true, displayModeBar: false });
+    }
+
+    function createTrendChart() {
+      const trend = DROUGHT_DATA.hunger.trend;
+      const trace = {
+        type: 'scatter',
+        mode: 'lines+markers',
+        x: trend.map(d => d.month),
+        y: trend.map(d => d.value),
+        line: { color: '#b33a3a', width: 4 },
+        marker: { size: 10, color: '#b33a3a' },
+        hovertemplate: '%{x}<br>%{y:,} people<extra></extra>'
+      };
+
+      const layout = {
+        title: { text: 'Rising Hunger: People Facing Crisis or Worse (IPC Phase 3+)', x: 0.02 },
+        margin: { l: 60, r: 20, t: 60, b: 40 },
+        plot_bgcolor: 'white',
+        paper_bgcolor: 'white',
+        hovermode: 'x unified',
+        xaxis: { title: '' },
+        yaxis: { title: 'Number of People', tickformat: ',.0f' }
+      };
+
+      Plotly.newPlot('trendChart', [trace], layout, { responsive: true, displayModeBar: false });
+    }
+
+    function createFundingChart() {
+      const received = DROUGHT_DATA.funding.un_response_plan * (DROUGHT_DATA.funding.funding_received_pct / 100);
+      const needed = DROUGHT_DATA.funding.un_response_plan;
+      const gap = needed - received;
+
+      const trace = {
+        type: 'bar',
+        x: ['Funds Needed', 'Funds Received', 'Funding Gap'],
+        y: [needed, received, gap],
+        marker: { color: ['#2e86c1', '#28b463', '#b33a3a'] },
+        text: [`$${(needed / 1e6).toFixed(0)}M`, `$${(received / 1e6).toFixed(0)}M`, `$${(gap / 1e6).toFixed(0)}M`],
+        textposition: 'outside',
+        hovertemplate: '%{x}<br>$%{y:,.0f}<extra></extra>'
+      };
+
+      const layout = {
+        title: { text: '2026 Humanitarian Response Plan: Critical Funding Gap', x: 0.02 },
+        margin: { l: 60, r: 20, t: 60, b: 40 },
+        plot_bgcolor: 'white',
+        paper_bgcolor: 'white',
+        showlegend: false,
+        yaxis: { title: 'USD', tickprefix: '$', tickformat: ',.0f' }
+      };
+
+      Plotly.newPlot('fundingChart', [trace], layout, { responsive: true, displayModeBar: false });
+    }
+
+    function createWFPTimeline() {
+      const values = [DROUGHT_DATA.funding.wfp_recipients_2025, DROUGHT_DATA.funding.wfp_recipients_current];
+      const trace = {
+        type: 'bar',
+        x: ['Early 2025', 'Current (March 2026)'],
+        y: values,
+        marker: { color: ['#2e86c1', '#b33a3a'] },
+        text: values.map(v => `${(v / 1e6).toFixed(1)}M`),
+        textposition: 'outside',
+        hovertemplate: '%{x}<br>%{y:,.0f} people<extra></extra>'
+      };
+
+      const layout = {
+        title: { text: 'WFP Food Assistance: Drastic Cuts Due to Funding Shortfalls', x: 0.02 },
+        margin: { l: 60, r: 20, t: 60, b: 40 },
+        plot_bgcolor: 'white',
+        paper_bgcolor: 'white',
+        showlegend: false,
+        yaxis: { title: 'People Receiving Assistance', tickformat: ',.0f' }
+      };
+
+      Plotly.newPlot('wfpChart', [trace], layout, { responsive: true, displayModeBar: false });
+    }
+
+    function buildRegionTable() {
+      const body = document.getElementById('regionTableBody');
+      body.innerHTML = DROUGHT_DATA.regions.map(row => `
+        <tr>
+          <td>${row.region}</td>
+          <td>${row.affected_pct}%</td>
+          <td>${Math.round(row.population_affected / 1000)}K</td>
+          <td>${row.severity}</td>
+        </tr>
+      `).join('');
+    }
+
+    function buildTestimonials() {
+      document.getElementById('testimonials').innerHTML = TESTIMONIALS.map(t => `
+        <article class="testimonial-box">
+          “${t.quote}”
+          <div class="testimonial-author">— ${t.author}</div>
+          <div class="testimonial-location">${t.location}</div>
+          <div class="testimonial-source">${t.source}</div>
+        </article>
+      `).join('');
+    }
+
+    function buildWaterMetrics() {
+      const cards = [
+        {
+          className: 'metric-card-warning',
+          label: 'Distance to Water',
+          value: `${DROUGHT_DATA.water.distance_km} km`,
+          context: 'Families walk up to 30km (18.6 miles) for water'
+        },
+        {
+          className: 'metric-card-critical',
+          label: 'Livestock Loss',
+          value: `${DROUGHT_DATA.water.percent_livestock_loss}%`,
+          context: 'of herds have died - the backbone of rural livelihoods'
+        },
+        {
+          className: 'metric-card-critical',
+          label: 'Crop Failure',
+          value: `${DROUGHT_DATA.water.crop_failure_pct}%`,
+          context: 'of agricultural land affected'
+        }
+      ];
+
+      document.getElementById('waterMetrics').innerHTML = cards.map(card => `
+        <div class="card ${card.className}">
+          <div class="metric-label">${card.label}</div>
+          <div class="metric-value">${card.value}</div>
+          <div class="metric-context">${card.context}</div>
+        </div>
+      `).join('');
+    }
+
+    function init() {
+      buildVisitorCard();
+      buildTopMetrics();
+      createSeverityMap();
+      createTrendChart();
+      createFundingChart();
+      createWFPTimeline();
+      buildRegionTable();
+      buildTestimonials();
+      buildWaterMetrics();
+    }
+
+    window.addEventListener('load', init);
+    window.addEventListener('resize', function() {
+      ['severityMap', 'trendChart', 'fundingChart', 'wfpChart'].forEach(id => Plotly.Plots.resize(document.getElementById(id)));
+    });
+  </script>
+</body>
+</html>
